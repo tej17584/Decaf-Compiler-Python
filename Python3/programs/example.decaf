@@ -1,0 +1,39 @@
+class Program {
+
+  struct Cow
+  {
+    char  name[50];
+    char  owner[50];
+    int height;
+    int weight;
+  }
+
+  int Eat(int weight)
+  {
+    weight = weight * 2 + 5 % 100;
+    return weight;
+  }
+
+  void Moo(boolean moo)
+  {
+    char message;
+    message = 'o';
+    if (moo)
+    {
+      makeSound(message);
+    }
+    else
+    {
+
+    }
+  }
+
+  void main() {
+    struct Cow betsy;
+    betsy.height = 5;
+    betsy.weight = 10;
+    besty.name = 'b';
+    Moo(true);
+    betsy.weight = Eat(betsy.weight);
+  }
+}
