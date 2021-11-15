@@ -4,19 +4,42 @@ class Program
 int A[10];
 
 
-int Ackerman(int m, int n)
+int Minimo(int i)
 {
-	if (m==0)
-	{ return n + 1; }
-	else
+	int Min;
+	int index;
+	Min = A[i];
+	index = i;
+	while(i<10)
 	{
-		if (n==1)
-		{ return Ackerman(m + 1, 0); }
-		else
-		{ return Ackerman(m-1, Ackerman(m,n-1));}
+		if (A[i]<Min)
+		{
+			Min = A[i];
+			index = i;
+		}
+		i = i + 1;
 	}
-
+	return index;
 }
+
+void Ordenar(void)
+{
+	int i;
+	int j;
+	int temp;
+	i = 0;
+	while(i<10)
+	{
+		int Index;
+		Index = Minimo(i);
+		temp = A[Index];
+		A[Index] = A[i];
+		A[i]=temp;
+		i = i+1;
+	}
+}
+
+
 
 void OutputInt(int n)
 {
@@ -25,20 +48,23 @@ void OutputInt(int n)
 int InputInt(void)
 {return 0;}
 
+
 void main(void)
 {
 
 	int i;
-	int j;
 	i = 0;
 	while(i<10)
 	{
 		A[i]=InputInt();
 		i = i+1;		
 	}
-	while (i<10)
+	Ordenar();
+	i = 0;
+	while(i<10)
 	{
-		OutputInt(Ackerman(A[i],j));
+		OutputInt(A[i]);
+		i = i+1;
 	}
 
 }
