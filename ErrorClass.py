@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: agosto 2021
+Fecha: noviembre 2021
 Programa: ErrorClass.py
 Propósito: este programa maneja los errores que podemos chequear
            y los imprime en consola

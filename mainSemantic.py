@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: septiembre 2021
+Fecha: noviembre 2021
 Programa: mainSemantic.py
 Propósito: Programa de nueva version del main anterior
 V 2.0

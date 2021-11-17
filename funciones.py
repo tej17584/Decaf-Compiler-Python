@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: agosto 2021
+Fecha: noviembre 2021
 Programa: funciones.py
 Propósito: ESte programa tiene funciones útiles
 V 2.0

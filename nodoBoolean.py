@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: septiembre 2021
+Fecha: noviembre 2021
 Programa: NodoBoolean.py
 Propósito: Este programa aloja el nodo para el bool
 V 2.0

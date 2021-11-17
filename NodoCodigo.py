@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: septiembre 2021
+Fecha: noviembre 2021
 Programa: NodoCodigo.py
 Propósito: Este programa aloja el nodo que usaremos para codigo
 V 2.0

@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: septiembre 2021
+Fecha: noviembre 2021
 Programa: tablaSimbolosv2.py
 Propósito: Este programa alojará 3 clases para cada tabla. Este es una nueva version del codigo
 de las tablas de símbolos.

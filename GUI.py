@@ -1,7 +1,7 @@
 """
 Nombre: Alejandro Tejada
 Curso: Diseño Compiladores
-Fecha: septiembr 2021
+Fecha: noviembre 2021
 Programa: GUI.py
 Propósito: Segunda version de la interfaz
 V 2.0
