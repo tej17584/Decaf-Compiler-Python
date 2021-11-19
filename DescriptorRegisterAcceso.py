@@ -20,287 +20,256 @@ class DescriptorGlobal:
         print("El descriptor general esta iniciandose....")
         # declaramos un diccionario para el descriptor de registro
         self.DescriptorRegistro = {}
-        self.DescriptorAcceso = {}  # declaramos un diccionario para el descriptor de accesos
+        # declaramos un diccionario para el descriptor de accesos
+        self.DescriptorAcceso = {}
 
-    def actualizarCasoLD(self, R, x):
-        '''
-            Caso LD R, x
-        '''
-        print(f'LD {R}, {x}')
-        self.DescriptorRegistro[R] = [x]
+    def actualizarCasoLDR(self, Registro, X_value):
+        """
+        Caso cuando queremos cargar un valor a una direccion de registro
+        *@param Registro: el registro que vamos a usar
+        *@param X_value: el valor a cargar en el registro
+        """
+        print(f'LD {Registro}, {X_value}')
+        self.DescriptorRegistro[Registro] = [X_value]
 
-        self.DescriptorAcceso[x].append(R)
+        self.DescriptorAcceso[X_value].append(Registro)
 
-    def eliminarVariableDeRegistro(self, variable):
-        '''
-            Se elimina variable de todos los
-            registros
+    def actualizarCasoSTR(self, X_value, Registro):
+        """
+        Caso cuando queremos hacer storage de un valor
+        *@param Registro: el registro que vamos a usar
+        *@param X_value: el valor a cargar en el registro
+        """
+        print(f'ST {X_value}, {Registro}')
+        self.eliminarVarRegister(X_value)
+        # como es un valor igualitario, es ella misma siempre, la guardamos asi
+        self.DescriptorAcceso[X_value] = [X_value]
 
-            Parametro:
-            - variable: variable a eliminar
+    def actualizarMultipleST(self, Registro):
+        """
+        Cuando son multiples storage
+        *@param Registro: el registro que vamos a usar
+        """
+        for var in self.DescriptorRegistro[Registro]:
+            self.actualizarCasoSTR(var, Registro)
 
-        '''
-        for key, value in self.DescriptorRegistro.items():
+    def eliminarVarRegister(self, variable):
+        """
+        Eliminamos la variable de todos los registros
+        *@param variable: la variable a eliminar
+        """
+        for key, valor in self.DescriptorRegistro.items():
             try:
-                value.remove(variable)
+                valor.remove(variable)
             except:
                 continue
 
-    def actualizarCasoST(self, x, R):
-        '''
-            Caso ST x, R
-        '''
-        print(f'ST {x}, {R}')
-        self.eliminarVariableDeRegistro(x)
-        self.DescriptorAcceso[x] = [x]  # solo sería ella misma
+    def actualizarCasoOP(self, Registro, X_Value):
+        """
+        Caso de actualizacion general de casos, reasignamos los valores dinámicamente
+        *@param Registro: el registro a reasignar
+        *@param X_value: el valor a cambiar dinámicamente entre cosas
+        """
 
-    def actualizarMultipleST(self, R):
-        for var in self.DescriptorRegistro[R]:
-            self.actualizarCasoST(var, R)
-
-    def actualizarCasoOP(self, Rx, x):
-        '''
-            Caso ADD Rx, Ry, Rz
-            x = y + z
-        '''
-        self.DescriptorRegistro[Rx] = [x]
-        self.DescriptorAcceso[x] = [Rx]
-
-        for i in self.DescriptorAcceso.keys():
-            if (i == x):
+        # el dict del descripto de acceso en la posicion del valor es el registro
+        self.DescriptorAcceso[X_Value] = [Registro]
+        # igual, el descriptor de registro en la posicion del registro es el valor
+        self.DescriptorRegistro[Registro] = [X_Value]
+        # itemamos el descriptor de acceso y removemos si el valor no coincide
+        for x in self.DescriptorAcceso.keys():
+            if (x == X_Value):
                 continue
             try:
-                self.DescriptorAcceso[i].remove(Rx)
+                self.DescriptorAcceso[x].remove(Registro)
             except:
                 pass
 
-    def actualizarCasoCopia(self, x, Ry):
-        '''
-            Caso x = y
-        '''
-        self.DescriptorRegistro[Ry].append(x)
-        self.DescriptorRegistro[x] = [Ry]
+    def actualizarCasoCopia(self, X_value, RegistroCopia):
+        """
+        Caso cuando es una igualdada lo que tenemos
+        *@param RegistroCopia: el valor que appendeamos al diccionario
+        *@param X_value: el valor a igualar
+        """
+        self.DescriptorRegistro[RegistroCopia].append(X_value)
+        self.DescriptorRegistro[X_value] = [RegistroCopia]
         pass
 
-    def buscarRegistroEnAcceso(self, variable):
-        '''
-            Funcion para buscar un registro en
-            el acceso de una variable
+    def buscarRegistroEnAcceso(self, var):
+        """
+        Esta funcion busca un registro en el descriptor de acceso, mediante una
+        var
+        *@param var: la variable a buscar
+        """
+        for x in self.DescriptorAcceso[var]:
+            if (x.find('R') != -1):  # si logramos encontrar el registro
+                return x
 
-            Parametros:
-            - variable: variable a evaluar
+    def getRegistroVacio(self, dictRegistros=None):
+        """
+        Busca un registro libre
+        *@param dictRegistros: el diccionario de registros
+        """
+        # si no encontramos registros hacemos una copia deep
+        if (not dictRegistros):
+            dictRegistros = copy.deepcopy(self.DescriptorRegistro)
 
-            Return:
-            - Registro o Nada si no hay un registro
-        '''
-        for i in self.DescriptorAcceso[variable]:
-            if (i.find('R') != -1):
-                return i
+        # dict Registros lo iteramos, si tiene len0, es porque esta bacío y podemos usarlo
+        for llave, valor in dictRegistros.items():
+            if (len(valor) == 0):
+                return llave
 
-    def getRegistroVacio(self, registro=None):
-        '''
-            Funcion para obtener un registro libre
-
-            Retorno:
-            - R si hay registro libre, de lo contrario
-            nada.
-        '''
-        if (not registro):
-            registro = copy.deepcopy(self.DescriptorRegistro)
-
-        for key, value in registro.items():
-            if (len(value) == 0):
-                return key
-
-    def eliminarXTemp(self, variable):
-        '''
-            Crea un registro sin variable
-
-            Parametro:
-            - variable: variable a eliminar
-
-            Retorno:
-            - registro sin variable
-        '''
-        registroTemp = {}
-        for key, value in copy.deepcopy(self.DescriptorRegistro.items()):
+    def eliminarTemporalVar(self, variable):
+        """
+        Crea un nuevo registro en el dict, pero sin variable
+        *@param variable: eliminar esa temporal
+        """
+        innerDict = {}
+        copiaDiccionario = copy.deepcopy(self.DescriptorRegistro.items())
+        for llave, valor in copiaDiccionario:
+            # intentamos tener un valor de remover para la llave
             try:
-                registroTemp[key] = value.remove(variable)
+                innerDict[llave] = valor.remove(variable)
             except:
                 continue
-        return registroTemp
+        return innerDict
 
-    def getCantRegistrosEnAcceso(self, variable):
-        '''
-            Retorna la lista de registros en los
-            que esta una variable
-
-            Parametros:
-            - variable: variable a evaluar
-
-            Retorno:
-            - <list> registros
-        '''
-        registros = []
-        for i in self.DescriptorAcceso[variable]:
+    def getCountDictAccesRegister(self, itemToSearch):
+        """
+        Este método busca y cuenta una lista de registros en las que aparece
+        nuestro parámetro enviado
+        *@param itemToSearch: el item a buscar
+        """
+        innerArray = []
+        for i in self.DescriptorAcceso[itemToSearch]:
             if (i.find('R') != -1):
-                registros.append(i)
-        return registros
+                # si encontramosel registro lo appendeamos
+                innerArray.append(i)
+        # retornamos el registro
+        return innerArray
 
-    def iterarRegistrosCasiLibres(self, registro, usados):
-        '''
-            Itera sobre los registros que solo
-            tienen un valor, si esa variable
-            esta en otro registro, retorna R.
+    def iterarRegistrosCasiLibres(self, itemToSearch, arrayUsados):
+        """
+        El método itera sobre los registros que tienen un UNICO valor,
+        si ese valor esta en OTRO itemToSearch, lo retorna.
+        *@param itemToSearch: el registro para probar si existe
+        *@param arrayUsados: registros usados
+        """
+        for llave, valor in itemToSearch.items():
+            # si el value del item que buscamos es 1
+            if len(valor) == 1:
+                # accedemos a los registro que tenemos guardados
+                conteoRegistros = self.getCountDictAccesRegister(valor[0])
+                # Si es mayor a dos sinficia que esta en OTRO lugar
+                if (len(conteoRegistros) > 2):
+                    conteoRegistros.remove(llave)  # removemos la key
+                    # si el registro encontrado ESTA en los usados
+                    if conteoRegistros[0] in arrayUsados:
+                        continue  # pasamos
+                    # de lo contrario retornamos el valor del otro ITEM search
+                    return conteoRegistros[0]
 
-            Parametros:
-            - registro: registroTemp para iterar
-            - usados: parametros usados si no se
-            quieren repetir
+    def getRegMayorPrecedencia(self, itemToSearch, arrayUsados):
+        """
+        Retorna el itemToSearch con MENOS variables
+        *@param itemToSearch: el itemToSearch para buscar
+        *@param arrayUsados: registros arrayUsados
+        """
+        innerArray = sorted(
+            itemToSearch.items(), key=lambda x: len(x[1]), reverse=False)
 
-            Retorno:
-            - R si hay un registro que cumpla,
-            de lo contrario nada.
-        '''
-        for key, value in registro.items():
-            if len(value) == 1:
-                registros = self.getCantRegistrosEnAcceso(value[0])
+        for x in innerArray:
+            # si no se encuentra entre los usados
+            if x[0] not in arrayUsados:
+                return x[0]  # lo retornamos
 
-                if (len(registros) > 2):
-                    registros.remove(key)
-                    if registros[0] in usados:
-                        continue
-                    return registros[0]
+    def getRegistroMain(self, varToSearch, OperadorOpcional=None, arrayUsados=[]):
+        """
+        ESta funcion busca en los registros y nos retorna uno para buscar.
+        REtorna un registro disponible
+        *@param varToSearch: la variable para obtener el registros
+        *@param OperadorOpcional: el operando que si se pasa como parametro, significa que es un operando
+        *@param arrayUsados: el array de variables usadas
+        """
+        if (len(self.DescriptorAcceso[varToSearch]) > 0):
+            # evaluar si en acceso[varToSearch] hay algun registro, si lo hay lo llamaremos R
+            RegistroTemporal = self.buscarRegistroEnAcceso(varToSearch)
+            if (RegistroTemporal):
+                print(f'{varToSearch} -> Caso 1')
+                return RegistroTemporal
 
-    def getMejorRegistro(self, registro, usados):
-        '''
-            Funcion para evaluar que registro tiene
-            menos variables para liberar.
+        RegistroTemporal = self.getRegistroVacio()
+        if(RegistroTemporal):  # Si hay algun registro libre, retornarlo
+            print(f'{varToSearch} -> Caso 2')
+            self.actualizarCasoLDR(RegistroTemporal, varToSearch)
+            return RegistroTemporal
 
-            Parametros:
-            - registro: registro temporal
-            - usados: registros usados por
-            si no se quieren repetir
+        registroTemp = None  # si no tenemos un registro disponible
 
-            Retorno:
-            - Registro con menos variables.
-        '''
-        registroSort = sorted(
-            registro.items(), key=lambda x: len(x[1]), reverse=False)
-
-        for i in registroSort:
-            if i[0] not in usados:
-                return i[0]
-
-    def getRegAuxiliar(self, variable, x=None, usados=[]):
-        '''
-            Funcion auxiliar para obtener un registro
-
-            Parametros:
-            - variable: variable a obtener un registro.
-            - x: si se pasa como parametro, significa
-            que x es un operando.
-            - usados: registros usados, si en dado caso
-            no se quieren repetir.
-
-            Retorno:
-            - Registro disponible para variable.
-        '''
-        if (len(self.DescriptorAcceso[variable]) > 0):
-            # evaluar si en acceso[variable]
-            # hay algun registro, si lo hay
-            # lo llamaremos R
-            Rtemp = self.buscarRegistroEnAcceso(variable)
-            if (Rtemp):
-                print(f'{variable} -> Caso 1')
-                return Rtemp
-
-        # Si hay algun registro libre, retornarlo
-        Rtemp = self.getRegistroVacio()
-        if(Rtemp):
-            print(f'{variable} -> Caso 2')
-            self.actualizarCasoLD(Rtemp, variable)
-            return Rtemp
-
-        # cuando no hay registro disponible:
-
-        registroTemp = None
-
-        # Evaluar si x no es un operando
-        if (x):
-            # eliminar de forma temporal a x de los
-            # registros que lo contengan
-            registroTemp = self.eliminarXTemp(x)
+        if (OperadorOpcional):  # si la variable es un operando
+            # eliminamos de forma tempora a OperadorOpcional de los registros que lo contengan
+            registroTemp = self.eliminarTemporalVar(OperadorOpcional)
         else:
+            # de lo contrario, lo copiamos y usamos
             registroTemp = copy.deepcopy(self.DescriptorRegistro)
 
         # Si hay algun registro libre, retornarlo
-        Rtemp = self.getRegistroVacio(registroTemp)
-        if(Rtemp):
-            if not Rtemp in usados:
-                print(f'{variable} -> Caso 3')
-                self.actualizarCasoLD(Rtemp, variable)
-                return Rtemp
+        RegistroTemporal = self.getRegistroVacio(registroTemp)
+        # si es un operador
+        if(RegistroTemporal):
+            if not RegistroTemporal in arrayUsados:
+                print(f'{varToSearch} -> Caso 3')
+                self.actualizarCasoLDR(RegistroTemporal, varToSearch)
+                return RegistroTemporal
 
-        # Iterar sobre los registros que solo tengan
-        # un valor, identificar si esa variable esta
-        # en otro registro, de ser ese el caso seleccionar
-        # ese registro (R)
-        Rtemp = self.iterarRegistrosCasiLibres(registroTemp, usados)
-        if Rtemp:
-            print(f'{variable} -> Caso 4')
-            self.actualizarCasoLD(Rtemp, variable)
-            return Rtemp
+        """
+        Acá iteramos sobre los registros que tengan de length 1, miramos si
+        la variable esta en OTRO registro, y retornamos R de ser asi
+        """
+        RegistroTemporal = self.iterarRegistrosCasiLibres(
+            registroTemp, arrayUsados)  # iteramos los registros casi libres
+        if RegistroTemporal:
+            print(f'{varToSearch} -> Caso 4')
+            self.actualizarCasoLDR(RegistroTemporal, varToSearch)
+            return RegistroTemporal
 
-        # Evaluar que registro tiene menos variables para liberar
-        # Pasar cada variable a su direccion de memoria y
-        # seleccionar ese registro (R)
-        print(f'{variable} -> Caso 5')
-        Rtemp = self.getMejorRegistro(registroTemp, usados)
-        self.actualizarMultipleST(Rtemp)
-        self.actualizarCasoLD(Rtemp, variable)
-        return Rtemp
+        """
+        Evaluamos que registro tiene menos variables para liberar, pasamos
+        cada variable que buscamos a su direccion de memoria y luego seleccionamos
+        el registro
+        """
+        print(f'{varToSearch} -> Caso 5')
+        RegistroTemporal = self.getRegMayorPrecedencia(
+            registroTemp, arrayUsados)  # buscamos el registro de mayor precedencia
+        # actualizamos los diccionarios
+        self.actualizarMultipleST(RegistroTemporal)
+        self.actualizarCasoLDR(RegistroTemporal, varToSearch)
+        return RegistroTemporal
 
-    def getReg(self, x, y, z=None):
-        '''
-            Funcion principal para obtener
-            los registros dado x, y, z.
+    def getReg(self, var1, var2, var3=None):
+        """
+        Esta funcion hace uso de getRegistroMain que es la logica detras de los casos distintos
+        que podemos llegar a tener.
+        las variables son los parametros
+        """
+        operador = None
+        arrayInner = []
 
-            x = y + z
-            x = y
-
-            Parametros:
-            - x,y,z: variables de una instruccion
-
-            Retorno:
-            - lista de registros de la forma [Rx, Ry, Rz]
-        '''
-        registros = []
-        xOperando = None
-
-        if (z == None):
-            # sabemos que es asignacion
-            # asi que solo necesitamos
-            # 1 registro
-            if (x == y):
-                xOperando = x
-
-            registro = self.getRegAuxiliar(y, xOperando, registros)
-            registros.append(registro)
-            registros.append(registro)
+        if (var3 == None):
+            if (var1 == var2):  # es una asignacion as que se necesita solo de un registro
+                operador = var1
+            registro = self.getRegistroMain(var2, operador, arrayInner)
+            arrayInner.append(registro)
+            arrayInner.append(registro)
 
         else:
-            # es una operacion de la
-            # forma x = y + z
+            if (var1 == var3 or var1 == var2):  # de lo contrario es una operacion
+                operador = var1
+            # iteramos sobre las variables
+            for x in [var1, var2, var3]:
+                arrayInner.append(self.getRegistroMain(
+                    x, operador, arrayInner))
 
-            if (x == y or x == z):
-                xOperando = x
-
-            for variable in [x, y, z]:
-                registros.append(self.getRegAuxiliar(
-                    variable, xOperando, registros))
-
-        return registros
+        return arrayInner
 
     def debug(self):
         print('##################')
@@ -337,6 +306,6 @@ d.DescriptorAcceso = {
 # t = a - b
 d.debug()
 print('t = a - b')
-print(d.getReg(x='t', y='a', z='b'))
+print(d.getReg(var1='t', var2='a', var3='b'))
 d.debug()
 print()
