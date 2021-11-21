@@ -11,60 +11,20 @@ class ARGCodigoGenerador:
     def construirIf(self, Rsrc, etiqueta):
 
         retorno = f"bgtz {Rsrc}, {etiqueta}"
-        pass
+        return retorno
 
-    def construirMultiplicacion(self, Rdest, Rsrc1, Rsrc2):
-        retorno = f"mul {Rdest}, {Rsrc1}, {Rsrc2}"
-        pass
+    def construirMultiplicacion(self, registros):
+        return f"\tmul {registros[0]}, {registros[1]}, {registros[2]}\n"
 
-    def construirSuma(self, cuadrupla):
-        x = cuadrupla.resultado
-        y = cuadrupla.arg1
-        z = cuadrupla.arg2
-        print("\t# Suma")
+    def construirSuma(self, registros):
+        return f"\tadd {registros[0]}, {registros[1]}, {registros[2]}\n"
 
-        self.descriptor.agregarAcceso(x)
-        self.descriptor.agregarAcceso(y)
-        self.descriptor.agregarAcceso(z)
-
-        esLiteral = False
-        literal = None
-        try:
-            y = int(y)
-            esLiteral = True
-            literal = y
-        except:
-            pass
-
-        try:
-            z = int(z)
-            esLiteral = True
-            literal = z
-        except:
-            pass
-
-        registros = self.descriptor.getReg(x, y, z)
-        if(esLiteral):
-            print(
-                f"\taddi {registros[0]}, {registros[1]}, {literal}")
-
-        self.descriptor.eliminarAccesoTemporal(y)
-        self.descriptor.eliminarAccesoTemporal(z)
-        # print(self.descriptor.registro)
-        # print(self.descriptor.acceso)
-        # retorno = f"add {Rdest}, {Rsrc1}, {Rsrc2}"
-
-    def construirDivision(self, Rdest, Rsrc1, Rsrc2):
-        retorno = f"div {Rdest}, {Rsrc1}, {Rsrc2}"
-        pass
-
-    def construirMenos(self, Rdest, Rsrc1):
+    def cosntruirNegacion(self, Rdest, Rsrc1):
         retorno = f"neg {Rdest}, {Rsrc1}"
         pass
 
-    def construirResta(self, Rdest, Rsrc1, Rsrc2):
-        retorno = f"sub {Rdest}, {Rsrc1}, {Rsrc2}"
-        pass
+    def construirResta(self, registros):
+        return f"\tsub {registros[0]}, {registros[1]}, {registros[2]}\n"
 
     def construirNegacion(self, Rdest, Rsrc1):
         retorno = f"not {Rdest}, {Rsrc1}"
@@ -102,14 +62,23 @@ class ARGCodigoGenerador:
         retorno = f"sne {Rdest}, {Rsrc1}, {Rsrc2}"
         pass
 
-
-    def construirEncabezado(self):
+    def construirEncabezado(self, nombreHeader):
         return(f'''
 .section .text
-.global _start
-_start:
+.global {nombreHeader}
+{nombreHeader}:
+''')
 
-        ''')
+    def construirFuncionNueva(self, nombre):
+        return(f'''
+
+{nombre}
+
+''')
+
+    def alocarEspacioMetodo(self, sizeTotal):
+        retorno = f"\tsub sp, sp, #{sizeTotal}\n"
+        return retorno
 
     def finPrograma(self):
         print('''
@@ -117,4 +86,3 @@ _start:
 \tli $v0, 10
 \tsyscall
         ''')
-

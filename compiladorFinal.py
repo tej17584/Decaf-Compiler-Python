@@ -7,6 +7,7 @@ Propósito: Esta clase aloja la logica del compilador final
 V 2.0
 """
 
+from os import name
 from mainSemantic import Compilar
 from mainIntermedio import CompilarIntermedio
 from ARMGenerator import *
@@ -23,8 +24,11 @@ class Compilador_Final():
         self.codigoIntermedio = []
         self.metodosCodigoIntermedio = {}
         self.sizeMetodoActual = 0
+        self.metodoActual = ""
+        self.primerMetodo = ""
         self.readIntermediateCode()
         self.limpiarCodigo()
+        self.headerPlaced = False
         # variables globales para los registros
         self.descriptor_reg = {
             'R0': [],
@@ -95,21 +99,68 @@ class Compilador_Final():
         codigoAssemblerFinal = ""
         # isntancia del ARMG generator
         generadorCodigoARM = ARGCodigoGenerador()
-        # generamos el encabezado inicial
-        codigoAssemblerFinal += generadorCodigoARM.construirEncabezado()
         for x in self.codigoIntermedio:
             # condicion cuando iniciamos la definicion o es un DEF main
-            if ('DEF MAIN' == x):
-                generadorCodigoARM
+            if ('DEF' in x) and ('END DEF' not in x):
+                # significa que es una definicion
+                nameFuncion = x.replace('DEF ', '')
+                nameFuncion = nameFuncion.replace(':', '')
+                self.metodoActual = nameFuncion
+                # buscamos su size en el dict y ahora ya lo tenemos
+                for llave, valor in self.metodosCodigoIntermedio.items():
+                    if(llave == nameFuncion):
+                        self.sizeMetodoActual = valor
+                # ahora miramos si es un header GLOBAL o solo uno extra
+                if(self.headerPlaced == False):  # no han puesto el header, primero método que nos topamos
+                    # generamos el encabezado inicial
+                    self.headerPlaced = True
+                    self.primerMetodo = nameFuncion
+                    codigoAssemblerFinal += generadorCodigoARM.construirEncabezado(
+                        nameFuncion)
+                    # alocamos el tamaño de la funcion
+                    codigoAssemblerFinal += generadorCodigoARM.alocarEspacioMetodo(
+                        self.sizeMetodoActual)
+                else:
+                    # si es una declaracion nueva aparte de la global
+                    codigoAssemblerFinal += generadorCodigoARM.construirFuncionNueva(
+                        nameFuncion)
+                    # alocamos el tamaño de la funcion
+                    codigoAssemblerFinal += generadorCodigoARM.alocarEspacioMetodo(
+                        self.sizeMetodoActual)
+
+            elif('END DEF' in x):
+                pass
+            else:  # de lo contrario es una tripleta
+                # obtenemos los registros
+                codigo, registros, elementos = self.getReg(x)
+                codigoAssemblerFinal += codigo
+                if('+' in x) or ('*' in x) or ('-' in x):  # si es una operacion x= a + b
+                    if('+' in x):  # si es una suma
+                        codigoAssemblerFinal += generadorCodigoARM.construirSuma(
+                            registros)
+                    if('*' in x):  # si es una suma
+                        codigoAssemblerFinal += generadorCodigoARM.construirMultiplicacion(
+                            registros)
+                    if('-' in x):  # si es una suma
+                        codigoAssemblerFinal += generadorCodigoARM.construirResta(
+                            registros)
+                    # actualizamos
+                    self.descriptor_reg[registros[0]] = [elementos[0]]
+                    self.descriptor_dir[elementos[0]] = [registros[0]]
+                    for llave, valor in self.descriptor_dir.items():
+                        if registros[0] in valor and llave != elementos[0]:
+                            indice = valor.index(registros[0])
+                            self.descriptor_dir[llave].pop(indice)
         print(self.getReg("t0 = fp[4] + fp[8]"))
         print(self.getReg("fp[0] = t0"))
 
         print("-------------CODIGO ASSEMBLER FINAL----------")
         print()
         print(codigoAssemblerFinal)
+
     def getPositionSP(self, variable):
-        if variable[0] == "L" or variable[0] == "fp":  # es una variable Local
-            val = str(variable[2:-1])
+        if variable[0] == "f":  # es una variable Local
+            val = str(variable[3:-1])
             if val.isnumeric():
                 inst = f'[sp, #{val}]'
                 return inst
