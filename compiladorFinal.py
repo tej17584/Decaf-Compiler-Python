@@ -20,7 +20,8 @@ class Compilador_Final():
         Variables iniciales finales
         """
         self.codigoIntermedio = []
-        self.metodosCodigoIntermedio={}
+        self.metodosCodigoIntermedio = {}
+        self.sizeMetodoActual = 0
         self.readIntermediateCode()
         self.limpiarCodigo()
         # variables globales para los registros
@@ -36,10 +37,19 @@ class Compilador_Final():
             'R8': [],
             'R9': [],
             'R10': [],
-            'R11': [],
         }
         # Descriptor de direccciones
         self.descriptor_dir = {}
+        # algunos operandos
+        self.bool_operands = {
+            '<=': 'bge',
+            '>=': 'ble',
+            '!=': 'bne',
+            '==': 'beq',
+            '<': 'bgt',
+            '>': 'blt',
+        }
+        self.iterarCodigoIntermedio()
 
     def readIntermediateCode(self):
         infile = open("codigoIntermedioFinal", 'rb')
@@ -79,6 +89,19 @@ class Compilador_Final():
 
         self.codigoIntermedio = innerArray
         pprint(self.codigoIntermedio)
+
+    def iterarCodigoIntermedio(self):
+        print("X")
+        print(self.getReg("t0 = fp[4] + fp[8]"))
+
+    def getPositionSP(self, variable):
+        if variable[0] == "L" or variable[0] == "fp":  # es una variable Local
+            val = str(variable[2:-1])
+            if val.isnumeric():
+                inst = f'[sp, #{val}]'
+                return inst
+            else:
+                return variable
 
     def getReg(self, inst):
         inst = str(inst).strip().replace("\t", "").replace(" ", "")
