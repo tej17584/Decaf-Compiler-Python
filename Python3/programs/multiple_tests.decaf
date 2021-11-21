@@ -4,6 +4,7 @@ class Program
 
 void main(){
 	int i;
-	i = 125 * 20;
+	int b;
+	i = b * 20;
 }
 }

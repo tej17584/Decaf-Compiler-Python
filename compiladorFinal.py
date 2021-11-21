@@ -286,7 +286,7 @@ class Compilador_Final():
                         self.descriptor_dir[z].append(key)
                         esLiteral = False
                         try:
-                            y = int(y)
+                            z = int(z)
                             esLiteral = True
                         except:
                             pass
@@ -312,7 +312,7 @@ class Compilador_Final():
                         self.descriptor_reg[tempR] = key
                         esLiteral = False
                         try:
-                            y = int(y)
+                            z = int(z)
                             esLiteral = True
                         except:
                             pass
@@ -362,7 +362,7 @@ class Compilador_Final():
             regs[1] = regy
             esLiteral = False
             try:
-                y = int(y)
+                x = int(x)
                 esLiteral = True
             except:
                 pass
