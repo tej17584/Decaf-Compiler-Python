@@ -72,7 +72,7 @@ class ARGCodigoGenerador:
     def construirFuncionNueva(self, nombre):
         return(f'''
 
-{nombre}
+{nombre}:
 
 ''')
 
