@@ -13,6 +13,8 @@ from antlr4.tree.Tree import Tree
 from funciones import *
 import sys
 import json
+import pickle
+from pprint import pp, pprint
 
 
 class generalSymbolTable():
@@ -264,19 +266,21 @@ class dictTableMetods():
         self.arrayMetodos = []
         #print(' -- Nuevo SCOPE --')
 
-    def AddEntryToTable(self, typeValue, idValue, parameters, returnVariable):
+    def AddEntryToTable(self, typeValue, idValue, parameters, returnVariable, sizeMetodo):
         """
         agrega un valor a la tabla
         *@param: typeValue: el tipo de método
         *@param: idValue: el ID
         *@param: parameters: los parametros si posee
         *@param: returnVariable: la variable de retorno si tiene
+        *@param: sizeMetodo: el size del método
         """
         self.arrayMetodos.append({
             'Tipo': typeValue,
             'Id': idValue,
             'Parameters': parameters,
-            'Return': returnVariable
+            'Return': returnVariable,
+            "SizeMetodo": sizeMetodo
         })
 
     def getSymbolFromTable(self, variable):
@@ -290,16 +294,35 @@ class dictTableMetods():
 
         return 0
 
+    def addSizeToMethodTable(self, size, metodoActual):
+        for metodo in self.arrayMetodos:
+            if metodo['Id'] == metodoActual:
+                metodo['SizeMetodo'] = size
+
     def valueToTable(self):
         """
         transforma un array o valor a tabla
         """
-        self.pretty_table.field_names = ['Tipo', 'ID', 'Parameters', 'Return']
+        self.pretty_table.field_names = [
+            'Tipo', 'ID', 'Parameters', 'Return', 'SizeMetodo']
         for i in self.arrayMetodos:
             self.pretty_table.add_row(list(i.values()))
 
         print(' --- Diccionario métodos ---')
         print(self.pretty_table)
+        self.pretty_table.clear_rows()
+
+    def valueToTableV2(self):
+        """
+        transforma un array o valor a tabla
+        """
+        dictMetodos = {}
+        for metodo in self.arrayMetodos:
+            dictMetodos[metodo['Id'].upper()] = metodo['SizeMetodo']
+        filename = 'codigoMetodos'
+        outfile = open(filename, 'wb')
+        pickle.dump(dictMetodos, outfile)
+        outfile.close()
         self.pretty_table.clear_rows()
 
 

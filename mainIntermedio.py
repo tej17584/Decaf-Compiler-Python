@@ -131,13 +131,13 @@ class DecafAlejandroPrinter(decafAlejandroV2Listener):
             for scope in innerArray:
                 innerVar2 = scope.getSymbolFromTable(variable)
                 if innerVar2 != 0:
-                    if(innerVar2["Scope"]=="GLOBAL"):
+                    if(innerVar2["Scope"] == "GLOBAL"):
                         return innerVar2, "GLOBAL"
                     else:
                         return innerVar2, "ANOTHER"
             return 0
         else:
-            if(innerVar["Scope"]=="GLOBAL"):
+            if(innerVar["Scope"] == "GLOBAL"):
                 founded = "GLOBAL"
             else:
                 founded = "ANOTHER"
@@ -204,7 +204,7 @@ class DecafAlejandroPrinter(decafAlejandroV2Listener):
         if self.tabla_metodos.getSymbolFromTable(metodo) == 0:
             # ALEJANDRO CHANGES ---
             self.addMethodActual(metodo)
-            self.arrayProduccionesTerminadas.append(f'DEF {metodo.upper()}:')
+            self.arrayProduccionesTerminadas.append(f'DEF {metodo.upper()}:\n')
             # <--------->
             if ctx.return_type().var_type() is not None:
                 tipo = ctx.return_type().var_type().getText()
@@ -222,7 +222,7 @@ class DecafAlejandroPrinter(decafAlejandroV2Listener):
                     self.tabla_parametros.AddEntryToTable(
                         typeParameter, idParameter)
 
-            self.tabla_metodos.AddEntryToTable(tipo, metodo, parameters, None)
+            self.tabla_metodos.AddEntryToTable(tipo, metodo, parameters, None, 0)
 
         self.addScope()
 
@@ -237,6 +237,8 @@ class DecafAlejandroPrinter(decafAlejandroV2Listener):
     def exitMethod_declr(self, ctx: decafAlejandroV2Parser.Method_declrContext):
         metodo = ctx.method_name().getText()
         name = ctx.method_name().getText()
+        size_scope = self.scope_Actual.getSize() # obtenemos el size del método
+        self.tabla_metodos.addSizeToMethodTable(size_scope, self.metodo_Actual)
         self.arrayProduccionesTerminadas.append(f'END DEF {name.upper()} \n\n')
         # <--------->
         self.tabla_parametros.cleanTable()
@@ -1420,8 +1422,8 @@ class DecafAlejandroPrinter(decafAlejandroV2Listener):
         outfile.close()
 
         print('----------> FIN PROGRAMA <--------------')
-        """ self.scope_Actual.valueToTable()
-        self.tabla_metodos.valueToTable()
+        self.tabla_metodos.valueToTableV2()
+        """self.tabla_metodos.valueToTable()
         self.tabla_estructuras.valueToTable() """
 
 

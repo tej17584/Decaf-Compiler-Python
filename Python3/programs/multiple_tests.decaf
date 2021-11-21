@@ -1,20 +1,15 @@
 class Program
 {
 
-int A[10];
-
-int Minimo(int i){
-	return i;
-}
-
-void Ordenar(void)
-{
+	void s(){
+		int b;
+		int c;
+		c = 1 + b;
+	}
+void main(){
 	int i;
 	int j;
 	int temp;
-	i = j + temp;
-}
-
-void main(){
+	i = j +  temp;
 }
 }

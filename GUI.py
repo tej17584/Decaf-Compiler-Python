@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
 
         self.errorForlog2 = QPlainTextEdit()
         self.errorForlog2.setFont(fixedfont)
-        
+
         self.windowResultsIntermedio.layout = QVBoxLayout()
         self.windowResultsIntermedio.layout.addWidget(self.errorForlog2)
         self.windowResultsIntermedio.setLayout(
@@ -344,9 +344,9 @@ class MainWindow(QMainWindow):
             infile = open("codigoIntermedioFinal", 'rb')
             arrayIntermedio = pickle.load(infile)
             if(arrayIntermedio != None):
-                acumulador=""
+                acumulador = ""
                 for x in arrayIntermedio:
-                    acumulador= acumulador + x + '\n'
+                    acumulador = acumulador + x + '\n'
                 self.errorForlog2.setPlainText(acumulador)
             else:
                 self.errorForlog2.setPlainText(

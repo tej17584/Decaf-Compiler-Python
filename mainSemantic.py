@@ -159,7 +159,8 @@ class DecafAlejandroPrinter(decafAlejandroListener):
                     self.tabla_parametros.AddEntryToTable(
                         typeParameter, idParameter)
 
-            self.tabla_metodos.AddEntryToTable(tipo, metodo, parameters, None)
+            self.tabla_metodos.AddEntryToTable(
+                tipo, metodo, parameters, None, 0)
         else:
             # self.tipoNodo
             line = ctx.method_name().start.line
