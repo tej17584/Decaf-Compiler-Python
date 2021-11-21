@@ -9,6 +9,7 @@ V 2.0
 
 from mainSemantic import Compilar
 from mainIntermedio import CompilarIntermedio
+from ARMGenerator import *
 import pickle
 from pprint import pp, pprint
 
@@ -88,12 +89,24 @@ class Compilador_Final():
                 cont += 1
 
         self.codigoIntermedio = innerArray
-        pprint(self.codigoIntermedio)
 
     def iterarCodigoIntermedio(self):
         print("X")
+        codigoAssemblerFinal = ""
+        # isntancia del ARMG generator
+        generadorCodigoARM = ARGCodigoGenerador()
+        # generamos el encabezado inicial
+        codigoAssemblerFinal += generadorCodigoARM.construirEncabezado()
+        for x in self.codigoIntermedio:
+            # condicion cuando iniciamos la definicion o es un DEF main
+            if ('DEF MAIN' == x):
+                generadorCodigoARM
         print(self.getReg("t0 = fp[4] + fp[8]"))
+        print(self.getReg("fp[0] = t0"))
 
+        print("-------------CODIGO ASSEMBLER FINAL----------")
+        print()
+        print(codigoAssemblerFinal)
     def getPositionSP(self, variable):
         if variable[0] == "L" or variable[0] == "fp":  # es una variable Local
             val = str(variable[2:-1])

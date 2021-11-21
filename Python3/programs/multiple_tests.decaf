@@ -1,6 +1,9 @@
 class Program
 {
-
+void patito(){
+	int s;
+	s= 1 + 2;
+}
 void main(){
 	int i;
 	int j;
