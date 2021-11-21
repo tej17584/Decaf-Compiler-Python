@@ -19,6 +19,9 @@ class ARGCodigoGenerador:
     def construirSuma(self, registros):
         return f"\tadd {registros[0]}, {registros[1]}, {registros[2]}\n"
 
+    def construirSumaV2(self, registros, constante):
+        return f"\tadd {registros[0]}, {registros[1]}, {constante}\n"
+
     def cosntruirNegacion(self, Rdest, Rsrc1):
         retorno = f"neg {Rdest}, {Rsrc1}"
         pass

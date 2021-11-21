@@ -1,17 +1,9 @@
 class Program
 {
 
-void estado(){
-	int i;
-	int j;
-	int temp;
-	i = j +  temp;
-}
 
 void main(){
 	int i;
-	int j;
-	int temp;
-	i = j +  temp;
+	i = 125 * 20;
 }
 }

@@ -136,8 +136,20 @@ class Compilador_Final():
                 codigoAssemblerFinal += codigo
                 if('+' in x) or ('*' in x) or ('-' in x):  # si es una operacion x= a + b
                     if('+' in x):  # si es una suma
-                        codigoAssemblerFinal += generadorCodigoARM.construirSuma(
-                            registros)
+                        esLiteral = False
+                        literal = None
+                        try:
+                            y = int(y)
+                            esLiteral = True
+                            literal = y
+                        except:
+                            pass
+                        if(esLiteral == True):
+                            codigoAssemblerFinal += generadorCodigoARM.construirSumaV2(
+                                registros, literal)
+                        else:
+                            codigoAssemblerFinal += generadorCodigoARM.construirSuma(
+                                registros)
                     if('*' in x):  # si es una suma
                         codigoAssemblerFinal += generadorCodigoARM.construirMultiplicacion(
                             registros)
@@ -151,8 +163,6 @@ class Compilador_Final():
                         if registros[0] in valor and llave != elementos[0]:
                             indice = valor.index(registros[0])
                             self.descriptor_dir[llave].pop(indice)
-        print(self.getReg("t0 = fp[4] + fp[8]"))
-        print(self.getReg("fp[0] = t0"))
 
         print("-------------CODIGO ASSEMBLER FINAL----------")
         print()
@@ -166,6 +176,8 @@ class Compilador_Final():
                 return inst
             else:
                 return variable
+        else:
+            return ""
 
     def getReg(self, inst):
         inst = str(inst).strip().replace("\t", "").replace(" ", "")
@@ -216,7 +228,17 @@ class Compilador_Final():
                         self.descriptor_reg[key] = [
                             y]  # se ingresa al registro
                         self.descriptor_dir[y].append(key)
-                        code += f"\tldr {key}, {self.getPositionSP(y)}\n"
+                        esLiteral = False
+                        try:
+                            y = int(y)
+                            esLiteral = True
+                        except:
+                            pass
+                        if(esLiteral == False):
+                            code += f"\tldr {key}, {self.getPositionSP(y)}\n"
+                        else:
+                            code += f"\tmov {key}, #{y}\n"
+                            code += f"\tstr {key}, [sp]\n"
                         regs[1] = key
                         case3 = False
                         break
@@ -232,7 +254,17 @@ class Compilador_Final():
                         tempR = self.descriptor_dir[key].pop(
                             index)  # se quita el registro
                         self.descriptor_reg[tempR] = key
-                        code += f"\tldr {tempR}, {self.getPositionSP(y)}\n"
+                        esLiteral = False
+                        try:
+                            y = int(y)
+                            esLiteral = True
+                        except:
+                            pass
+                        if(esLiteral == False):
+                            code += f"\tldr {tempR}, {self.getPositionSP(y)}\n"
+                        else:
+                            code += f"\tmov {tempR}, #{y}\n"
+                            code += f"\tstr {tempR}, [sp]\n"
                         regs[1] = key
                         break
 
@@ -252,7 +284,17 @@ class Compilador_Final():
                         self.descriptor_reg[key] = [
                             z]  # se ingresa al registro
                         self.descriptor_dir[z].append(key)
-                        code += f"\tldr {key}, {self.getPositionSP(z)}\n"
+                        esLiteral = False
+                        try:
+                            y = int(y)
+                            esLiteral = True
+                        except:
+                            pass
+                        if(esLiteral == False):
+                            code += f"\tldr {key}, {self.getPositionSP(z)}\n"
+                        else:
+                            code += f"\tmov {key}, #{z}\n"
+                            code += f"\tstr {key}, [sp]\n"
                         regs[2] = key
                         case3 = False
                         break
@@ -268,7 +310,17 @@ class Compilador_Final():
                         tempR = self.descriptor_dir[key].pop(
                             index)  # se quita el registro
                         self.descriptor_reg[tempR] = key
-                        code += f"\tldr {tempR}, {self.getPositionSP(z)}\n"
+                        esLiteral = False
+                        try:
+                            y = int(y)
+                            esLiteral = True
+                        except:
+                            pass
+                        if(esLiteral == False):
+                            code += f"\tldr {tempR}, {self.getPositionSP(z)}\n"
+                        else:
+                            code += f"\tmov {tempR}, #{z}\n"
+                            code += f"\tstr {tempR}, [sp]\n"
                         regs[2] = key
                         break
 
@@ -308,8 +360,17 @@ class Compilador_Final():
             self.descriptor_dir[x] = [x]
             regs[0] = regy
             regs[1] = regy
-            code = f"\tstr {regy}, {self.getPositionSP(x)}\n"
-
+            esLiteral = False
+            try:
+                y = int(y)
+                esLiteral = True
+            except:
+                pass
+            if(esLiteral == False):
+                code = f"\tstr {regy}, {self.getPositionSP(x)}\n"
+            else:
+                code += f"\tmov {regy}, #{x}\n"
+                code += f"\tstr {regy}, [sp]\n"
         return code, regs, elements
 
 
