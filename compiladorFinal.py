@@ -175,9 +175,9 @@ class Compilador_Final():
                         esLiteral = False
                         literal = None
                         try:
-                            y = int(y)
+                            x = int(x)
                             esLiteral = True
-                            literal = y
+                            literal = x
                         except:
                             pass
                         if(esLiteral == True):
@@ -415,3 +415,4 @@ class Compilador_Final():
 
 
 
+comp = Compilador_Final()
