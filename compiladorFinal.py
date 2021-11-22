@@ -414,7 +414,4 @@ class Compilador_Final():
         return codigoReturn, registros, elements
 
 
-class compiladorARMCode():
-    compiladorsito = Compilador_Final()
-    print()
-    print("-----------------------------")
+

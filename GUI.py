@@ -16,7 +16,7 @@ import sys
 
 from mainSemantic import Compilar
 from mainIntermedio import CompilarIntermedio
-from compiladorFinal import compiladorARMCode
+from compiladorFinal import Compilador_Final
 import pickle
 
 
@@ -383,7 +383,7 @@ class MainWindow(QMainWindow):
 
         if self.editor.toPlainText() != '':
             # we drop the values for the piccke
-            programaCompilado = compiladorARMCode()
+            programaCompilado = Compilador_Final()
             infile = open("codigoARMDumpPicke", 'rb')
             arrayARM = pickle.load(infile)
             if(arrayARM != None):
