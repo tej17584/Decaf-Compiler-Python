@@ -179,29 +179,29 @@ class Compilador_Final():
         else:
             return ""
 
-    def getReg(self, inst):
-        inst = str(inst).strip().replace("\t", "").replace(" ", "")
-        flagop = False
-        op = ""
-        operators = ['+', '-', '*', '/', '%']
-        code = ""
-        regs = ['', '', '']
-        case3 = False
+    def getReg(self, tripletaEntrada):
+        tripletaEntrada = str(tripletaEntrada).strip().replace("\t", "").replace(" ", "")
+        isOperation = False
+        valueOperacion = ""
+        arrayOperadores = ['+', '-', '*', '/', '%']
+        codigoReturn = ""
+        registros = ['', '', '']
+        caso3 = False
         elements = []
         # Verificar si es una operacion u asignacion
-        for x in operators:
-            if x in inst:
-                flagop = True
-                op = x
+        for x in arrayOperadores:
+            if x in tripletaEntrada:
+                isOperation = True
+                valueOperacion = x
 
         llaves = self.descriptorDirecciones.keys()
 
-        if flagop:  # si la instruccion es tripleta
-            pos_eq = inst.find("=")
-            pos_op = inst.find(op)
-            x = inst[:pos_eq]
-            y = inst[pos_eq+1:pos_op]
-            z = inst[pos_op+1:]
+        if isOperation:  # si la instruccion es tripleta
+            pos_eq = tripletaEntrada.find("=")
+            pos_op = tripletaEntrada.find(valueOperacion)
+            x = tripletaEntrada[:pos_eq]
+            y = tripletaEntrada[pos_eq+1:pos_op]
+            z = tripletaEntrada[pos_op+1:]
             if x not in llaves:
                 self.descriptorDirecciones[x] = [] if 't' in x else [x]
             if y not in llaves:
@@ -212,22 +212,22 @@ class Compilador_Final():
             print("Val2 ", y)
             print("Val3 ", z)
             elements = [x, y, z]
-            case3 = True
+            caso3 = True
             # valor y
             # Revision de caso 1 y 2
-            for key, value in self.descriptorRegistros.items():
-                if y in value:
+            for llave, valor in self.descriptorRegistros.items():
+                if y in valor:
                     print("Entro al caso 1, no se hace nada")
-                    print("Reg ", key)
-                    regs[1] = key
-                    case3 = False
+                    print("Reg ", llave)
+                    registros[1] = llave
+                    caso3 = False
                     break
-                if y not in value:
-                    if len(value) == 0:
-                        print("Reg ", key)
-                        self.descriptorRegistros[key] = [
+                if y not in valor:
+                    if len(valor) == 0:
+                        print("Reg ", llave)
+                        self.descriptorRegistros[llave] = [
                             y]  # se ingresa al registro
-                        self.descriptorDirecciones[y].append(key)
+                        self.descriptorDirecciones[y].append(llave)
                         esLiteral = False
                         try:
                             y = int(y)
@@ -235,25 +235,25 @@ class Compilador_Final():
                         except:
                             pass
                         if(esLiteral == False):
-                            code += f"\tldr {key}, {self.getPositionSP(y)}\n"
+                            codigoReturn += f"\tldr {llave}, {self.getPositionSP(y)}\n"
                         else:
-                            code += f"\tmov {key}, #{y}\n"
-                            code += f"\tstr {key}, [sp]\n"
-                        regs[1] = key
-                        case3 = False
+                            codigoReturn += f"\tmov {llave}, #{y}\n"
+                            codigoReturn += f"\tstr {llave}, [sp]\n"
+                        registros[1] = llave
+                        caso3 = False
                         break
-            if case3:  # No encontro primeros casos
-                for key, value in self.descriptorDirecciones.items():
+            if caso3:  # No encontro primeros casos
+                for llave, valor in self.descriptorDirecciones.items():
                     # ingresar casos de caso 3
-                    if len(value) > 1:
+                    if len(valor) > 1:
                         index = 0
-                        for val in value:
+                        for val in valor:
                             if 'R' in val:
                                 break
                             index += 1
-                        tempR = self.descriptorDirecciones[key].pop(
+                        tempR = self.descriptorDirecciones[llave].pop(
                             index)  # se quita el registro
-                        self.descriptorRegistros[tempR] = key
+                        self.descriptorRegistros[tempR] = llave
                         esLiteral = False
                         try:
                             y = int(y)
@@ -261,29 +261,29 @@ class Compilador_Final():
                         except:
                             pass
                         if(esLiteral == False):
-                            code += f"\tldr {tempR}, {self.getPositionSP(y)}\n"
+                            codigoReturn += f"\tldr {tempR}, {self.getPositionSP(y)}\n"
                         else:
-                            code += f"\tmov {tempR}, #{y}\n"
-                            code += f"\tstr {tempR}, [sp]\n"
-                        regs[1] = key
+                            codigoReturn += f"\tmov {tempR}, #{y}\n"
+                            codigoReturn += f"\tstr {tempR}, [sp]\n"
+                        registros[1] = llave
                         break
 
-            case3 = True
+            caso3 = True
             # valor z
             # Revision de caso 1 y 2
-            for key, value in self.descriptorRegistros.items():
-                if z in value:
+            for llave, valor in self.descriptorRegistros.items():
+                if z in valor:
                     print("Entro al caso 1, no se hace nada")
-                    print("Reg ", key)
-                    regs[2] = key
-                    case3 = False
+                    print("Reg ", llave)
+                    registros[2] = llave
+                    caso3 = False
                     break
-                if z not in value:
-                    if len(value) == 0:
-                        print("Reg ", key)
-                        self.descriptorRegistros[key] = [
+                if z not in valor:
+                    if len(valor) == 0:
+                        print("Reg ", llave)
+                        self.descriptorRegistros[llave] = [
                             z]  # se ingresa al registro
-                        self.descriptorDirecciones[z].append(key)
+                        self.descriptorDirecciones[z].append(llave)
                         esLiteral = False
                         try:
                             z = int(z)
@@ -291,25 +291,25 @@ class Compilador_Final():
                         except:
                             pass
                         if(esLiteral == False):
-                            code += f"\tldr {key}, {self.getPositionSP(z)}\n"
+                            codigoReturn += f"\tldr {llave}, {self.getPositionSP(z)}\n"
                         else:
-                            code += f"\tmov {key}, #{z}\n"
-                            code += f"\tstr {key}, [sp]\n"
-                        regs[2] = key
-                        case3 = False
+                            codigoReturn += f"\tmov {llave}, #{z}\n"
+                            codigoReturn += f"\tstr {llave}, [sp]\n"
+                        registros[2] = llave
+                        caso3 = False
                         break
-            if case3:  # No encontro primeros casos
-                for key, value in self.descriptorDirecciones.items():
+            if caso3:  # No encontro primeros casos
+                for llave, valor in self.descriptorDirecciones.items():
                     # ingresar casos de caso 3
-                    if len(value) > 1:
+                    if len(valor) > 1:
                         index = 0
-                        for val in value:
+                        for val in valor:
                             if 'R' in val:
                                 break
                             index += 1
-                        tempR = self.descriptorDirecciones[key].pop(
+                        tempR = self.descriptorDirecciones[llave].pop(
                             index)  # se quita el registro
-                        self.descriptorRegistros[tempR] = key
+                        self.descriptorRegistros[tempR] = llave
                         esLiteral = False
                         try:
                             z = int(z)
@@ -317,29 +317,29 @@ class Compilador_Final():
                         except:
                             pass
                         if(esLiteral == False):
-                            code += f"\tldr {tempR}, {self.getPositionSP(z)}\n"
+                            codigoReturn += f"\tldr {tempR}, {self.getPositionSP(z)}\n"
                         else:
-                            code += f"\tmov {tempR}, #{z}\n"
-                            code += f"\tstr {tempR}, [sp]\n"
-                        regs[2] = key
+                            codigoReturn += f"\tmov {tempR}, #{z}\n"
+                            codigoReturn += f"\tstr {tempR}, [sp]\n"
+                        registros[2] = llave
                         break
 
             # valor x
-            for key, value in self.descriptorRegistros.items():  # Caso 1
-                if x in value:
-                    regs[0] = key
+            for llave, valor in self.descriptorRegistros.items():  # Caso 1
+                if x in valor:
+                    registros[0] = llave
                     break
 
-            if regs[0] == '':  # No se cumple el caso 1
-                regs[0] = regs[1]
+            if registros[0] == '':  # No se cumple el caso 1
+                registros[0] = registros[1]
 
-            self.descriptorDirecciones[x].append(regs[0])
-            self.descriptorRegistros[regs[0]] = [x]
+            self.descriptorDirecciones[x].append(registros[0])
+            self.descriptorRegistros[registros[0]] = [x]
 
         else:  # si la instruccion es una asignacion
-            pos_eq = inst.find("=")
-            x = inst[:pos_eq]
-            y = inst[pos_eq+1:]
+            pos_eq = tripletaEntrada.find("=")
+            x = tripletaEntrada[:pos_eq]
+            y = tripletaEntrada[pos_eq+1:]
             elements = [x, y]
             keysDir = self.descriptorDirecciones.keys()
             if x not in keysDir:
@@ -358,8 +358,8 @@ class Compilador_Final():
             # Agregar x al descriptor de registro Ry
             self.descriptorRegistros[regy].append(x)
             self.descriptorDirecciones[x] = [x]
-            regs[0] = regy
-            regs[1] = regy
+            registros[0] = regy
+            registros[1] = regy
             esLiteral = False
             try:
                 x = int(x)
@@ -367,11 +367,11 @@ class Compilador_Final():
             except:
                 pass
             if(esLiteral == False):
-                code = f"\tstr {regy}, {self.getPositionSP(x)}\n"
+                codigoReturn = f"\tstr {regy}, {self.getPositionSP(x)}\n"
             else:
-                code += f"\tmov {regy}, #{x}\n"
-                code += f"\tstr {regy}, [sp]\n"
-        return code, regs, elements
+                codigoReturn += f"\tmov {regy}, #{x}\n"
+                codigoReturn += f"\tstr {regy}, [sp]\n"
+        return codigoReturn, registros, elements
 
 
 compiladorsito = Compilador_Final()
