@@ -388,9 +388,9 @@ class MainWindow(QMainWindow):
             arrayARM = pickle.load(infile)
             if(arrayARM != None):
                 acumulador = ""
-                for x in arrayARM:
-                    acumulador = acumulador + x + '\n'
-                self.errorForlog3.setPlainText(acumulador)
+                """ for x in arrayARM:
+                    acumulador = acumulador + x + '\n' """
+                self.errorForlog3.setPlainText(arrayARM)
             else:
                 self.errorForlog3.setPlainText(
                     'No se ha generado nada de codigo ARM')
