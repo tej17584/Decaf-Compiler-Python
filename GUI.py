@@ -16,6 +16,7 @@ import sys
 
 from mainSemantic import Compilar
 from mainIntermedio import CompilarIntermedio
+from compiladorFinal import compiladorARMCode
 import pickle
 
 
@@ -43,11 +44,13 @@ class MainWindow(QMainWindow):
         self.windowEditor = QWidget()
         self.windowResults = QWidget()
         self.windowResultsIntermedio = QWidget()
+        self.windowResultsARM = QWidget()
 
         # # AddEntryToTable tabs
         self.tabs.addTab(self.windowEditor, "Editor de código")
         self.tabs.addTab(self.windowResults, "Análisis semántico")
         self.tabs.addTab(self.windowResultsIntermedio, "Código intermedio")
+        self.tabs.addTab(self.windowResultsARM, "Código ARM")
 
         self.errorForlog2 = QPlainTextEdit()
         self.errorForlog2.setFont(fixedfont)
@@ -56,6 +59,15 @@ class MainWindow(QMainWindow):
         self.windowResultsIntermedio.layout.addWidget(self.errorForlog2)
         self.windowResultsIntermedio.setLayout(
             self.windowResultsIntermedio.layout)
+
+        self.errorForlog3 = QPlainTextEdit()
+        self.errorForlog3.setFont(fixedfont)
+
+        self.windowResultsARM.layout = QVBoxLayout()
+        self.windowResultsARM.layout.addWidget(self.errorForlog3)
+        self.windowResultsARM.setLayout(
+            self.windowResultsARM.layout)
+
         # creating a QPlainTextEdit object
         self.editor = QPlainTextEdit()
 
@@ -134,6 +146,11 @@ class MainWindow(QMainWindow):
         intermediate_action.setStatusTip("Compilar programa actual")
         intermediate_action.triggered.connect(self.compilarcodigoIntermedio)
         file_toolbar.addAction(intermediate_action)
+
+        arm_action = QAction("CompilarARM", self)
+        arm_action.setStatusTip("Compilar programa actual")
+        arm_action.triggered.connect(self.compilarCodigoARM)
+        file_toolbar.addAction(arm_action)
 
         # creating another tool bar for editing text
         edit_toolbar = QToolBar("Editar")
@@ -352,6 +369,32 @@ class MainWindow(QMainWindow):
                 self.errorForlog2.setPlainText(
                     'No se ha generado nada de codigo intermedio V2')
             self.tabs.setCurrentIndex(2)
+    # save to path method
+
+    def compilarCodigoARM(self):
+        """
+        Método para generar Codigo de ARM
+        """
+        if self.path is None:
+            return self.file_saveas()
+        self._save_to_path(self.path)
+
+        input = self.path
+
+        if self.editor.toPlainText() != '':
+            # we drop the values for the piccke
+            programaCompilado = compiladorARMCode()
+            infile = open("codigoARMDumpPicke", 'rb')
+            arrayARM = pickle.load(infile)
+            if(arrayARM != None):
+                acumulador = ""
+                for x in arrayARM:
+                    acumulador = acumulador + x + '\n'
+                self.errorForlog3.setPlainText(acumulador)
+            else:
+                self.errorForlog3.setPlainText(
+                    'No se ha generado nada de codigo ARM')
+            self.tabs.setCurrentIndex(3)
     # save to path method
 
     def _save_to_path(self, path):

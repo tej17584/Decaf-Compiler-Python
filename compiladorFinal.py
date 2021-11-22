@@ -13,6 +13,42 @@ from mainIntermedio import CompilarIntermedio
 from ARMGenerator import *
 import pickle
 from pprint import pp, pprint
+from decafAlejandrov2Lexer import decafAlejandroV2Lexer
+from decafAlejandroV2Parser import decafAlejandroV2Parser
+from decafAlejandroV2Listener import decafAlejandroV2Listener
+from antlr4.error.ErrorListener import ErrorListener
+from antlr4 import *
+from antlr4.tree.Trees import TerminalNode
+from funciones import *
+from ErrorClass import *
+from nodoBoolean import NodoBooleano
+from symbolTable import *
+import emoji
+import sys
+from pprint import pprint
+from itertools import groupby
+from symbolTable import *
+# we import Node
+from NodoCodigo import *
+from nodoBoolean import *
+import pickle
+
+
+class MyErrorListener(ErrorListener):
+    def __init__(self):
+        self.hasErrors = False
+        self.lexicalErrors = []
+        super(MyErrorListener, self).__init__()
+        pass
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        self.hasErrors = True
+        errorMsg = str(line) + ":" + str(column) + \
+            ": sintaxis ERROR encontrado " + str(msg)
+        self.lexicalErrors.append(errorMsg)
+
+    def getHasError(self):
+        return self.hasErrors
 
 
 class Compilador_Final():
@@ -166,6 +202,10 @@ class Compilador_Final():
 
         print("-------------CODIGO ASSEMBLER FINAL----------")
         print()
+        filename = 'codigoARMDumpPicke'
+        outfile = open(filename, 'wb')
+        pickle.dump(codigoAssemblerFinal, outfile)
+        outfile.close()
         print(codigoAssemblerFinal)
 
     def getPositionSP(self, variable):
@@ -180,7 +220,8 @@ class Compilador_Final():
             return ""
 
     def getReg(self, tripletaEntrada):
-        tripletaEntrada = str(tripletaEntrada).strip().replace("\t", "").replace(" ", "")
+        tripletaEntrada = str(tripletaEntrada).strip().replace(
+            "\t", "").replace(" ", "")
         isOperation = False
         valueOperacion = ""
         arrayOperadores = ['+', '-', '*', '/', '%']
@@ -269,8 +310,7 @@ class Compilador_Final():
                         break
 
             caso3 = True
-            # valor z
-            # Revision de caso 1 y 2
+            # valor z Revision de caso 1 y 2
             for llave, valor in self.descriptorRegistros.items():
                 if z in valor:
                     print("Entro al caso 1, no se hace nada")
@@ -298,7 +338,7 @@ class Compilador_Final():
                         registros[2] = llave
                         caso3 = False
                         break
-            if caso3:  # No encontro primeros casos
+            if caso3:  # no se encontro nada en los otros casos
                 for llave, valor in self.descriptorDirecciones.items():
                     # ingresar casos de caso 3
                     if len(valor) > 1:
@@ -374,6 +414,7 @@ class Compilador_Final():
         return codigoReturn, registros, elements
 
 
-compiladorsito = Compilador_Final()
-print()
-print("-----------------------------")
+class compiladorARMCode():
+    compiladorsito = Compilador_Final()
+    print()
+    print("-----------------------------")
