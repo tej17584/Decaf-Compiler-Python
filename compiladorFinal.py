@@ -30,7 +30,7 @@ class Compilador_Final():
         self.limpiarCodigo()
         self.headerPlaced = False
         # variables globales para los registros
-        self.descriptor_reg = {
+        self.descriptorRegistros = {
             'R0': [],
             'R1': [],
             'R2': [],
@@ -44,7 +44,7 @@ class Compilador_Final():
             'R10': [],
         }
         # Descriptor de direccciones
-        self.descriptor_dir = {}
+        self.descriptorDirecciones = {}
         # algunos operandos
         self.bool_operands = {
             '<=': 'bge',
@@ -157,12 +157,12 @@ class Compilador_Final():
                         codigoAssemblerFinal += generadorCodigoARM.construirResta(
                             registros)
                     # actualizamos
-                    self.descriptor_reg[registros[0]] = [elementos[0]]
-                    self.descriptor_dir[elementos[0]] = [registros[0]]
-                    for llave, valor in self.descriptor_dir.items():
+                    self.descriptorRegistros[registros[0]] = [elementos[0]]
+                    self.descriptorDirecciones[elementos[0]] = [registros[0]]
+                    for llave, valor in self.descriptorDirecciones.items():
                         if registros[0] in valor and llave != elementos[0]:
                             indice = valor.index(registros[0])
-                            self.descriptor_dir[llave].pop(indice)
+                            self.descriptorDirecciones[llave].pop(indice)
 
         print("-------------CODIGO ASSEMBLER FINAL----------")
         print()
@@ -194,7 +194,7 @@ class Compilador_Final():
                 flagop = True
                 op = x
 
-        llaves = self.descriptor_dir.keys()
+        llaves = self.descriptorDirecciones.keys()
 
         if flagop:  # si la instruccion es tripleta
             pos_eq = inst.find("=")
@@ -203,11 +203,11 @@ class Compilador_Final():
             y = inst[pos_eq+1:pos_op]
             z = inst[pos_op+1:]
             if x not in llaves:
-                self.descriptor_dir[x] = [] if 't' in x else [x]
+                self.descriptorDirecciones[x] = [] if 't' in x else [x]
             if y not in llaves:
-                self.descriptor_dir[y] = [] if 't' in y else [y]
+                self.descriptorDirecciones[y] = [] if 't' in y else [y]
             if z not in llaves:
-                self.descriptor_dir[z] = [] if 't' in z else [z]
+                self.descriptorDirecciones[z] = [] if 't' in z else [z]
             print("Val1 ", x)
             print("Val2 ", y)
             print("Val3 ", z)
@@ -215,7 +215,7 @@ class Compilador_Final():
             case3 = True
             # valor y
             # Revision de caso 1 y 2
-            for key, value in self.descriptor_reg.items():
+            for key, value in self.descriptorRegistros.items():
                 if y in value:
                     print("Entro al caso 1, no se hace nada")
                     print("Reg ", key)
@@ -225,9 +225,9 @@ class Compilador_Final():
                 if y not in value:
                     if len(value) == 0:
                         print("Reg ", key)
-                        self.descriptor_reg[key] = [
+                        self.descriptorRegistros[key] = [
                             y]  # se ingresa al registro
-                        self.descriptor_dir[y].append(key)
+                        self.descriptorDirecciones[y].append(key)
                         esLiteral = False
                         try:
                             y = int(y)
@@ -243,7 +243,7 @@ class Compilador_Final():
                         case3 = False
                         break
             if case3:  # No encontro primeros casos
-                for key, value in self.descriptor_dir.items():
+                for key, value in self.descriptorDirecciones.items():
                     # ingresar casos de caso 3
                     if len(value) > 1:
                         index = 0
@@ -251,9 +251,9 @@ class Compilador_Final():
                             if 'R' in val:
                                 break
                             index += 1
-                        tempR = self.descriptor_dir[key].pop(
+                        tempR = self.descriptorDirecciones[key].pop(
                             index)  # se quita el registro
-                        self.descriptor_reg[tempR] = key
+                        self.descriptorRegistros[tempR] = key
                         esLiteral = False
                         try:
                             y = int(y)
@@ -271,7 +271,7 @@ class Compilador_Final():
             case3 = True
             # valor z
             # Revision de caso 1 y 2
-            for key, value in self.descriptor_reg.items():
+            for key, value in self.descriptorRegistros.items():
                 if z in value:
                     print("Entro al caso 1, no se hace nada")
                     print("Reg ", key)
@@ -281,9 +281,9 @@ class Compilador_Final():
                 if z not in value:
                     if len(value) == 0:
                         print("Reg ", key)
-                        self.descriptor_reg[key] = [
+                        self.descriptorRegistros[key] = [
                             z]  # se ingresa al registro
-                        self.descriptor_dir[z].append(key)
+                        self.descriptorDirecciones[z].append(key)
                         esLiteral = False
                         try:
                             z = int(z)
@@ -299,7 +299,7 @@ class Compilador_Final():
                         case3 = False
                         break
             if case3:  # No encontro primeros casos
-                for key, value in self.descriptor_dir.items():
+                for key, value in self.descriptorDirecciones.items():
                     # ingresar casos de caso 3
                     if len(value) > 1:
                         index = 0
@@ -307,9 +307,9 @@ class Compilador_Final():
                             if 'R' in val:
                                 break
                             index += 1
-                        tempR = self.descriptor_dir[key].pop(
+                        tempR = self.descriptorDirecciones[key].pop(
                             index)  # se quita el registro
-                        self.descriptor_reg[tempR] = key
+                        self.descriptorRegistros[tempR] = key
                         esLiteral = False
                         try:
                             z = int(z)
@@ -325,7 +325,7 @@ class Compilador_Final():
                         break
 
             # valor x
-            for key, value in self.descriptor_reg.items():  # Caso 1
+            for key, value in self.descriptorRegistros.items():  # Caso 1
                 if x in value:
                     regs[0] = key
                     break
@@ -333,22 +333,22 @@ class Compilador_Final():
             if regs[0] == '':  # No se cumple el caso 1
                 regs[0] = regs[1]
 
-            self.descriptor_dir[x].append(regs[0])
-            self.descriptor_reg[regs[0]] = [x]
+            self.descriptorDirecciones[x].append(regs[0])
+            self.descriptorRegistros[regs[0]] = [x]
 
         else:  # si la instruccion es una asignacion
             pos_eq = inst.find("=")
             x = inst[:pos_eq]
             y = inst[pos_eq+1:]
             elements = [x, y]
-            keysDir = self.descriptor_dir.keys()
+            keysDir = self.descriptorDirecciones.keys()
             if x not in keysDir:
-                self.descriptor_dir[x] = [] if 't' in x else [x]
+                self.descriptorDirecciones[x] = [] if 't' in x else [x]
             if y not in keysDir:
-                self.descriptor_dir[y] = [] if 't' in y else [y]
+                self.descriptorDirecciones[y] = [] if 't' in y else [y]
             print("Val1 ", x)
             print("Val2 ", y)
-            tempReg = self.descriptor_dir[y]
+            tempReg = self.descriptorDirecciones[y]
             regy = ""
             # Encontrar registro de Y
             for ele in tempReg:
@@ -356,8 +356,8 @@ class Compilador_Final():
                     regy = ele
 
             # Agregar x al descriptor de registro Ry
-            self.descriptor_reg[regy].append(x)
-            self.descriptor_dir[x] = [x]
+            self.descriptorRegistros[regy].append(x)
+            self.descriptorDirecciones[x] = [x]
             regs[0] = regy
             regs[1] = regy
             esLiteral = False
