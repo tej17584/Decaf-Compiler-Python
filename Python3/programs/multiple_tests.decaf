@@ -1,10 +1,16 @@
 class Program
 {
 
-
+void patito(){
+	int i;
+	int j;
+	int temp;
+	i = j +  temp;
+}
 void main(){
 	int i;
-	int b;
-	i = b * 20;
+	int j;
+	int temp;
+	i = j +  temp;
 }
 }
