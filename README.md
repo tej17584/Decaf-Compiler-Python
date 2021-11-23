@@ -3,7 +3,7 @@
   <img src="https://images-na.ssl-images-amazon.com/images/I/51FWXX9KWVL._AC_UL600_SR600,600_.jpg" alt="UkronTadd" width="664">
 <br>
 <br>
-Proyecto 2: Generación de código intermedio
+Proyecto 3: Proyecto final
 </h1>
 
 <p align="center">
@@ -17,16 +17,16 @@ Proyecto 2: Generación de código intermedio
 <p align="center">Alejandro Tejada 17584</p>
 <p align="center">Construccion de compiladores</p>
 <p align="center">Universidad del Valle de Guatemala</p>
-<p align="center">16/09/2021</p>
+<p align="center">22/11/2021</p>
 <hr />
 
 # Acerca de...
 
-Este proyecto es el segundo de tres de construccion de un compilador. Esta fase es la generación de código intermedio. El código intermedio es una fase intermedia entre el analisis semántico y el codigo a nivel de assembler, de esta forma, logramos hacer esta transición mas suave al tener algo más sencillo de traducir a lenguaje de máquina.
+Este proyecto es el tercer de tres de construccion de un compilador. Esta fase es la generación de código de ARM. llegamos al final de la generacion, donde tomamos el codigo intermedio y mediante manejo de registros, lo mandamos al STACK.
 Algunos puntos vistos en este proyecto
-- Traducción a código intermedio de expresiones
-- Traducción a código intermedio de IF y While
-- Traducción a código intermedio de Arrays, llamadas a métodos, parámetros, y operaciones.
+- Creación de función getREG para obtener registros
+- creacion de codigo ARM para expresiones
+- creacion de encabezado, etc
 
 # Descripción de herramientas  y archivos archivos
 
@@ -36,7 +36,8 @@ Algunos puntos vistos en este proyecto
 - Compiladores principios, técnicas y herramientas, 2da Edición - Alfred V. Aho
 - VS Code
 - Windows Terminal
-- A lot of Coffe (more Coffe than last time, A LOT) (**enought coffe for a life V4, version Intermediate Code**)
+- A lot of Coffe (more Coffe than last time, A LOT) (**enought coffe for a life V4, version Intermediate Code**) (**enought coffe for a reencarnation V1122323, version generation ARM Code**)
+
 
 
 ## Liberías NECESARIAS para correr el programa
@@ -65,7 +66,9 @@ Algunos puntos vistos en este proyecto
 | 11  | `NodoBoolean.py`                 | Un nodo para guardar las expresiones de algo complejo como un nodo IF       |
 | 12  | `NodoCodigo.py`                 | Una clase nodo para guardar expresiones y address de las cosas       |
 | 13 | `GUI.py`                 | La interfaz gráfica      |
-| 14  | `Readme.md`                      | El readme                                                                                                                          |
+| 14  | `Readme.md`                      | El readme                                                                                                                         |
+| 15  | `ARMGenerator.py`                      | La clase encargada de tener lo necesario para generar codigo de ARM, la sintaxis del mismo                                                                                                                     |
+| 16  | `compiladorFinal.py`                      | La clase que tiene el compilador final                                                                                                                     |
 | 15  | `Python3/Programas/multiple_tests.decaf` | El programa donde probamos por defecto                                                                                             |
 
 
@@ -74,87 +77,6 @@ Algunos puntos vistos en este proyecto
 
 
 
-## Cómo correr el proyecto
-
-- Primero se debe editar en el file de `Python3/Programas/simple.decaf` con lo que deseemos poner a prueba. Por ejemplo:
-  ```python
-        class Program
-        {
-
-        int A[10];
-
-
-        int Minimo(int i)
-        {
-          int Min;
-          int index;
-          Min = A[i];
-          index = i;
-          while(i<10)
-          {
-            if (A[i]<Min)
-            {
-              Min = A[i];
-              index = i;
-            }
-            i = i + 1;
-          }
-          return index;
-        }
-
-        void Ordenar(void)
-        {
-          int i;
-          int j;
-          int temp;
-          i = 0;
-          while(i<10)
-          {
-            int Index;
-            Index = Minimo(i);
-            temp = A[Index];
-            A[Index] = A[i];
-            A[i]=temp;
-            i = i+1;
-          }
-        }
-
-
-
-        void OutputInt(int n)
-        {
-        }
-
-        int InputInt(void)
-        {return 0;}
-
-
-        void main(void)
-        {
-
-          int i;
-          i = 0;
-          while(i<10)
-          {
-            A[i]=InputInt();
-            i = i+1;		
-          }
-          Ordenar();
-          i = 0;
-          while(i<10)
-          {
-            OutputInt(A[i]);
-            i = i+1;
-          }
-
-        }
-
-
-        }
-  ```
-- Luego, se debe correr el  programa `GUI.py` y ejecutarlo en una consola. 
-- Luego se debe de buscar el file con ABRIR file, luego, editar en el espacio lo que necesitemos.
-- Finalmente, presionar COMPILAR INTERMEDIO. Y el código intermedio aparecerá en la parte del texto donde debería.
 
 ## Creditos y Agradecimientos
 
@@ -168,6 +90,7 @@ Course teacher: Bidkar Pojoy
 - Compañeros de clase
 - More Coffe
 - Coffe machine right next to me
+- My family, all the people I love, THANKS!
 
 
 ## Licence

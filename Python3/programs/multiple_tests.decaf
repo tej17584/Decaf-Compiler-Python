@@ -1,17 +1,8 @@
 class Program
 {
-void patito2(){
-	int s;
-	int a;
-	int j;
-	int ss;
-	ss = s + a * j;
 
-}
 void main(){
 	int i;
-	int j;
-	int temp;
-	i = j +  temp;
+	i = 1 + 2;
 }
 }

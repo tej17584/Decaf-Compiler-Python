@@ -45,9 +45,3 @@ class ARGCodigoGenerador:
         retorno = f"\tsub sp, sp, #{sizeTotal}\n"
         return retorno
 
-    def finPrograma(self):
-        print('''
-\t# fin del programa
-\tli $v0, 10
-\tsyscall
-        ''')
